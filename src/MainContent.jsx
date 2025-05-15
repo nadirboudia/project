@@ -12,8 +12,12 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import moment from "moment"
+import 'moment/dist/locale/ar-dz'
 
+moment.locale('ar'); 
 function MainContent() {
+  const[timer , setTimer ]= useState(11)
 const cities = [
   {
     displayName: "الجزائر",
@@ -40,7 +44,7 @@ const cities = [
     apiName: "Saida"
   }
 ];
-
+const[today , setToday]=useState("")
 const[timing , setTiming] = useState({
     displayName: "سعيدة",
     apiName: "Saida"
@@ -62,17 +66,31 @@ setCityselected(cityObject);
 useEffect(()=>{
   axios.get(`http://api.aladhan.com/v1/timingsByCity?country=DZ&city=${cityselected.apiName}`)
   .then(function (response) {
-
     setTiming(response.data.data.timings)
     
-  
   })
   .catch(function (error) {
     // handle error
     console.error( "fetching data failed",error);
   })
+
+
+  const t =moment();
+  setToday(t.format('MMMM Do YYYY, h:mm:ss '))
+  
+
 },[cityselected])
 
+useEffect(() => {
+  const interval = setInterval(() => {
+    setTimer((t) => t - 1); 
+  }, 1000);
+
+  
+  return () => clearInterval(interval);
+}, []);
+
+console.log(timer)
 
 
 
@@ -85,12 +103,13 @@ useEffect(()=>{
        
  <div className="secondhalf">
         <h2>
-          15 mai 2025
+         {today}
         </h2>
         <h1>
     {cityselected.displayName}
   
         </h1>
+       
         </div>
 
 
@@ -98,8 +117,9 @@ useEffect(()=>{
         <h2>
           متبقي لصلاة   
         </h2>
+         
         <h1>
-          1 : 23 : 58
+        {timer}
         </h1>
         </div>
          
